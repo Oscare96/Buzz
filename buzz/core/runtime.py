@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import json
 
 from buzz.ai.provider import AIProvider
 from buzz.core.planner import parse_plan
@@ -24,7 +25,7 @@ class BuzzRuntime:
     router: ToolRouter
 
     def handle(self, request: BuzzRequest, *, confirmed: bool = False) -> BuzzResponse:
-        skills = ", ".join(self.router.registry.names()) or "(none)"
+        skills = json.dumps(self.router.registry.planner_specs(), separators=(",", ":"))
         prompt = SYSTEM_INSTRUCTION.format(skills=skills) + "\nUser request: " + request.text
         plan = parse_plan(self.provider.respond(prompt).text)
         results, pending = [], []
