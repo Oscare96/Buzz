@@ -4,7 +4,7 @@ from buzz.config.settings import Settings
 from buzz.integrations.home_assistant import HomeAssistantProvider
 from buzz.integrations.devops.github import GitHubDevOpsProvider
 from buzz.skills.computer import OpenApplicationSkill, OpenUrlSkill
-from buzz.skills.devops import PipelineStatusSkill
+from buzz.skills.devops import PipelineFailureSkill, PipelineStatusSkill
 from buzz.skills.devops_execute import RunPipelineSkill
 from buzz.skills.filesystem import DeleteFileSkill, ReadFileSkill, WriteFileSkill
 from buzz.skills.home import HomeAccessControlSkill, HomeServiceSkill, HomeStateSkill
@@ -20,6 +20,7 @@ def build_default_registry(settings: Settings | None = None) -> SkillRegistry:
     if settings and settings.github_enabled:
         github = GitHubDevOpsProvider(settings.github_token)
         registry.register(PipelineStatusSkill(github))
+        registry.register(PipelineFailureSkill(github))
         registry.register(RunPipelineSkill(github))
     if settings and settings.home_assistant_enabled:
         provider = HomeAssistantProvider(settings.home_assistant_url, settings.home_assistant_token)
