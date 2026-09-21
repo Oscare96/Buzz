@@ -15,5 +15,5 @@ from buzz.skills.defaults import build_default_registry
 def build_runtime() -> BuzzRuntime:
     settings = Settings.load()
     settings.validate_ai()
-    router = ToolRouter(build_default_registry(), AuditLog(Path(".cache/buzz/audit.jsonl")))
+    router = ToolRouter(build_default_registry(settings), AuditLog(Path(".cache/buzz/audit.jsonl")))
     return BuzzRuntime(provider=OpenAIProvider(), router=router)
