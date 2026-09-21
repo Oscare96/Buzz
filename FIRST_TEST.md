@@ -30,7 +30,9 @@ Try these in order:
 1. `Tell me my system information.`
 2. `Open https://github.com/Oscare96/Buzz`
 3. `Open Notepad.`
+4. `Create a file named first-test.txt in my Buzz workspace containing Buzz is working.` Confirm the action when Buzz asks.
+5. `Run the command python --version.` Confirm the action when Buzz asks.
 
-The first two exercise read/low-risk execution. Application launch is restricted to Buzz's approved application catalog. Sensitive commands are designed to stop for confirmation before execution.
+The first three exercise read/low-risk execution. The last two verify that Buzz can perform an authorized system-changing action itself rather than only explaining what to do. Application launch is restricted to Buzz's approved application catalog. Sensitive commands are designed to stop for confirmation before execution.
 
 Audit records are written locally under `.cache/buzz/audit.jsonl`.
