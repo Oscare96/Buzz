@@ -24,3 +24,6 @@ class SkillRegistry:
 
     def names(self) -> tuple[str, ...]:
         return tuple(sorted(self._skills))
+
+    def planner_specs(self) -> tuple[dict, ...]:
+        return tuple(self._skills[name].planner_spec() for name in sorted(self._skills))
