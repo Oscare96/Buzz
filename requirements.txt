@@ -6,3 +6,4 @@ openwakeword>=0.6,<1
 websockets>=13
 python-dotenv>=1.0,<2
 pytest>=8,<9
+requests>=2.32,<3
