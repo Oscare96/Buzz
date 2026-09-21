@@ -13,6 +13,7 @@ class PipelineStatusSkill(Skill):
     name = "devops.pipeline_status"
     description = "Read CI/CD pipeline status for a repository."
     risk_level = RiskLevel.READ
+    argument_schema = {"type":"object","properties":{"repository":{"type":"string"}},"required":["repository"],"additionalProperties":False}
 
     def __init__(self, provider: DevOpsProvider) -> None:
         self.provider = provider
