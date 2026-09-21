@@ -9,6 +9,7 @@ from buzz.ai.provider import AIProvider
 from buzz.core.planner import parse_plan
 from buzz.core.request import BuzzRequest, BuzzResponse
 from buzz.core.router import ToolRouter
+from buzz.security.approvals import ApprovalStore
 
 
 SYSTEM_INSTRUCTION = """You are Buzz's planning brain. Return JSON only with keys reply and actions.
@@ -23,6 +24,11 @@ Sensitive actions remain subject to Buzz's independent authorization layer."""
 class BuzzRuntime:
     provider: AIProvider
     router: ToolRouter
+    approvals: ApprovalStore | None = None
+
+    def __post_init__(self) -> None:
+        if self.approvals is None:
+            self.approvals = ApprovalStore()
 
     def handle(self, request: BuzzRequest, *, confirmed: bool = False) -> BuzzResponse:
         skills = json.dumps(self.router.registry.planner_specs(), separators=(",", ":"))
@@ -34,5 +40,12 @@ class BuzzRuntime:
             item = {"skill": action.skill, "arguments": action.arguments, "success": result.success, "message": result.message}
             results.append(item)
             if not result.success and "Confirmation required" in result.message:
-                pending.append({"skill": action.skill, "arguments": action.arguments, "reason": action.reason})
+                approval = self.approvals.issue(action.skill, action.arguments)
+                pending.append({"skill": action.skill, "arguments": action.arguments, "reason": action.reason, "approval_token": approval.token})
         return BuzzResponse(plan.reply, request.request_id, {"actions": results, "pending_confirmation": pending})
+
+    def confirm(self, skill: str, arguments: dict, approval_token: str):
+        if self.approvals is None or not self.approvals.consume(approval_token, skill, arguments):
+            from buzz.skills.base import SkillResult
+            return SkillResult(False, "Approval is invalid, expired, already used, or does not match this action.")
+        return self.router.execute(skill, confirmed=True, **arguments)
