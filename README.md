@@ -38,3 +38,7 @@ Populate the required provider keys in `.env` before enabling cloud AI or Eleven
 ## Branches
 
 `main` preserves the fork baseline while active Buzz development happens on `develop`.
+
+## Origin
+
+Buzz began as a fork of Hector G.'s Jarvis desktop automation project at https://github.com/hectorg2211/jarvis. The original `jarvis.py` is retained during the migration while Buzz evolves into a modular execution-first assistant.
