@@ -1,0 +1,24 @@
+"""Read-only DevOps skills."""
+
+from __future__ import annotations
+
+from typing import Any
+
+from buzz.integrations.devops.base import DevOpsProvider
+from buzz.security.risk import RiskLevel
+from buzz.skills.base import Skill, SkillResult
+
+
+class PipelineStatusSkill(Skill):
+    name = "devops.pipeline_status"
+    description = "Read CI/CD pipeline status for a repository."
+    risk_level = RiskLevel.READ
+
+    def __init__(self, provider: DevOpsProvider) -> None:
+        self.provider = provider
+
+    def execute(self, **kwargs: Any) -> SkillResult:
+        repository = str(kwargs.get("repository", "")).strip()
+        if not repository:
+            return SkillResult(False, "Repository is required.")
+        return SkillResult(True, "Pipeline status retrieved.", self.provider.pipeline_status(repository))
