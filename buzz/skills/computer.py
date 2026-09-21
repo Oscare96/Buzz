@@ -2,13 +2,22 @@
 
 from __future__ import annotations
 
+import os
 import subprocess
-import sys
 import webbrowser
 from typing import Any
 
 from buzz.security.risk import RiskLevel
 from buzz.skills.base import Skill, SkillResult
+
+
+DEFAULT_APPLICATIONS = {
+    "chrome": "chrome.exe",
+    "cursor": "Cursor.exe",
+    "notepad": "notepad.exe",
+    "spotify": "Spotify.exe",
+    "vscode": "code.exe",
+}
 
 
 class OpenUrlSkill(Skill):
@@ -26,18 +35,19 @@ class OpenUrlSkill(Skill):
 
 class OpenApplicationSkill(Skill):
     name = "computer.open_application"
-    description = "Launch an explicitly named local application."
+    description = "Launch an application from Buzz's approved application catalog."
     risk_level = RiskLevel.LOW
 
+    def __init__(self, applications: dict[str, str] | None = None) -> None:
+        self.applications = {**DEFAULT_APPLICATIONS, **(applications or {})}
+
     def execute(self, **kwargs: Any) -> SkillResult:
-        executable = str(kwargs.get("executable", "")).strip()
+        app = str(kwargs.get("app", "")).strip().lower()
+        executable = self.applications.get(app)
         if not executable:
-            return SkillResult(False, "Executable is required.")
+            return SkillResult(False, f"Application '{app}' is not in the approved catalog.")
         try:
-            if sys.platform == "win32":
-                subprocess.Popen([executable], shell=False)
-            else:
-                subprocess.Popen([executable])
+            subprocess.Popen([os.path.expandvars(executable)], shell=False)
         except OSError as exc:
             return SkillResult(False, f"Launch failed: {exc}")
-        return SkillResult(True, f"Launched {executable}")
+        return SkillResult(True, f"Launched {app}.")
