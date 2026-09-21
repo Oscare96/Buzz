@@ -13,6 +13,7 @@ class RunPipelineSkill(Skill):
     name = "devops.run_pipeline"
     description = "Start a CI/CD workflow after authorization."
     risk_level = RiskLevel.HIGH
+    argument_schema = {"type":"object","properties":{"repository":{"type":"string"},"workflow":{"type":"string"},"ref":{"type":"string"}},"required":["repository","workflow","ref"],"additionalProperties":False}
 
     def __init__(self, provider: DevOpsProvider) -> None: self.provider = provider
     def execute(self, **kwargs: Any) -> SkillResult:
@@ -25,6 +26,7 @@ class DeploySkill(Skill):
     name = "devops.deploy"
     description = "Deploy an application to an environment after explicit authorization."
     risk_level = RiskLevel.CRITICAL
+    argument_schema = {"type":"object","properties":{"application":{"type":"string"},"environment":{"type":"string"},"version":{"type":"string"}},"required":["application","environment","version"],"additionalProperties":False}
 
     def __init__(self, provider: DevOpsProvider) -> None: self.provider = provider
     def execute(self, **kwargs: Any) -> SkillResult:
@@ -37,6 +39,7 @@ class RemoteCommandSkill(Skill):
     name = "devops.run_command"
     description = "Run an authorized command on an approved DevOps target."
     risk_level = RiskLevel.CRITICAL
+    argument_schema = {"type":"object","properties":{"target":{"type":"string"},"command":{"type":"string"}},"required":["target","command"],"additionalProperties":False}
 
     def __init__(self, provider: DevOpsProvider) -> None: self.provider = provider
     def execute(self, **kwargs: Any) -> SkillResult:
