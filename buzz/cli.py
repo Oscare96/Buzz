@@ -21,8 +21,16 @@ def run_cli() -> int:
             return 0
         try:
             response = runtime.handle(BuzzRequest(text=text, source="cli"))
-            print(f"Buzz: {response.text}")
+            if response.text:
+                print(f"Buzz: {response.text}")
+            pending = response.metadata.get("pending_confirmation", [])
+            for action in pending:
+                answer = input(f"Confirm {action['skill']}? [y/N]: ").strip().lower()
+                if answer in {"y", "yes"}:
+                    result = runtime.router.execute(action["skill"], confirmed=True, **action["arguments"])
+                    print(f"Buzz: {result.message}")
             for action in response.metadata.get("actions", []):
-                print(f"  [{action['skill']}] {action['message']}")
+                if action not in pending and not action["success"]:
+                    print(f"Buzz: {action['message']}")
         except Exception as exc:
             print(f"Buzz error: {exc}")
