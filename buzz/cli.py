@@ -29,8 +29,9 @@ def run_cli() -> int:
                 if answer in {"y", "yes"}:
                     result = runtime.router.execute(action["skill"], confirmed=True, **action["arguments"])
                     print(f"Buzz: {result.message}")
+            pending_names = {item["skill"] for item in pending}
             for action in response.metadata.get("actions", []):
-                if action not in pending and not action["success"]:
+                if action["skill"] not in pending_names and not action["success"]:
                     print(f"Buzz: {action['message']}")
         except Exception as exc:
             print(f"Buzz error: {exc}")
