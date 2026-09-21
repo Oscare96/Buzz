@@ -29,6 +29,7 @@ class ReadFileSkill(Skill):
     name = "filesystem.read"
     description = "Read a text file inside the configured Buzz workspace."
     risk_level = RiskLevel.READ
+    argument_schema = {"type":"object","properties":{"path":{"type":"string"}},"required":["path"],"additionalProperties":False}
     def execute(self, **kwargs: Any) -> SkillResult:
         try:
             path = _safe_path(kwargs.get("path"))
@@ -41,6 +42,7 @@ class WriteFileSkill(Skill):
     name = "filesystem.write"
     description = "Write a text file inside the Buzz workspace after authorization."
     risk_level = RiskLevel.HIGH
+    argument_schema = {"type":"object","properties":{"path":{"type":"string"},"content":{"type":"string"}},"required":["path","content"],"additionalProperties":False}
     def execute(self, **kwargs: Any) -> SkillResult:
         try:
             path = _safe_path(kwargs.get("path"))
@@ -55,6 +57,7 @@ class DeleteFileSkill(Skill):
     name = "filesystem.delete"
     description = "Delete a file inside the Buzz workspace after explicit authorization."
     risk_level = RiskLevel.CRITICAL
+    argument_schema = {"type":"object","properties":{"path":{"type":"string"}},"required":["path"],"additionalProperties":False}
     def execute(self, **kwargs: Any) -> SkillResult:
         try:
             path = _safe_path(kwargs.get("path"))
