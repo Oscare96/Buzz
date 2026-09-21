@@ -13,6 +13,7 @@ class ShellCommandSkill(Skill):
     name = "computer.run_command"
     description = "Run an explicitly authorized local command without using a shell interpreter."
     risk_level = RiskLevel.CRITICAL
+    argument_schema = {"type":"object","properties":{"argv":{"type":"array","items":{"type":"string"}},"cwd":{"type":["string","null"]}},"required":["argv"],"additionalProperties":False}
 
     def execute(self, **kwargs: Any) -> SkillResult:
         argv = kwargs.get("argv")
