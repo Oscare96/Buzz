@@ -1,7 +1,8 @@
-"""Local filesystem capabilities with destructive actions gated."""
+"""Local filesystem capabilities sandboxed to a configured Buzz workspace."""
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Any
 
@@ -9,37 +10,55 @@ from buzz.security.risk import RiskLevel
 from buzz.skills.base import Skill, SkillResult
 
 
+def _workspace() -> Path:
+    return Path(os.getenv("BUZZ_WORKSPACE", "~/BuzzWorkspace")).expanduser().resolve()
+
+
+def _safe_path(value: Any) -> Path:
+    raw = Path(str(value or ""))
+    if not str(value or "").strip():
+        raise ValueError("Path is required.")
+    root = _workspace()
+    candidate = (root / raw).resolve() if not raw.is_absolute() else raw.expanduser().resolve()
+    if candidate != root and root not in candidate.parents:
+        raise ValueError(f"Path must be inside Buzz workspace: {root}")
+    return candidate
+
+
 class ReadFileSkill(Skill):
     name = "filesystem.read"
-    description = "Read a local text file."
+    description = "Read a text file inside the configured Buzz workspace."
     risk_level = RiskLevel.READ
     def execute(self, **kwargs: Any) -> SkillResult:
-        path = Path(str(kwargs.get("path", ""))).expanduser()
-        try: return SkillResult(True, "File read.", path.read_text(encoding="utf-8"))
-        except OSError as exc: return SkillResult(False, f"Read failed: {exc}")
+        try:
+            path = _safe_path(kwargs.get("path"))
+            return SkillResult(True, "File read.", path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            return SkillResult(False, f"Read failed: {exc}")
 
 
 class WriteFileSkill(Skill):
     name = "filesystem.write"
-    description = "Write a local text file after authorization."
+    description = "Write a text file inside the Buzz workspace after authorization."
     risk_level = RiskLevel.HIGH
     def execute(self, **kwargs: Any) -> SkillResult:
-        path = Path(str(kwargs.get("path", ""))).expanduser()
-        content = str(kwargs.get("content", ""))
         try:
+            path = _safe_path(kwargs.get("path"))
             path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(content, encoding="utf-8")
-            return SkillResult(True, "File written.")
-        except OSError as exc: return SkillResult(False, f"Write failed: {exc}")
+            path.write_text(str(kwargs.get("content", "")), encoding="utf-8")
+            return SkillResult(True, "File written.", {"path": str(path)})
+        except (OSError, ValueError) as exc:
+            return SkillResult(False, f"Write failed: {exc}")
 
 
 class DeleteFileSkill(Skill):
     name = "filesystem.delete"
-    description = "Delete a local file only after explicit authorization."
+    description = "Delete a file inside the Buzz workspace after explicit authorization."
     risk_level = RiskLevel.CRITICAL
     def execute(self, **kwargs: Any) -> SkillResult:
-        path = Path(str(kwargs.get("path", ""))).expanduser()
         try:
+            path = _safe_path(kwargs.get("path"))
             path.unlink()
-            return SkillResult(True, "File deleted.")
-        except OSError as exc: return SkillResult(False, f"Delete failed: {exc}")
+            return SkillResult(True, "File deleted.", {"path": str(path)})
+        except (OSError, ValueError) as exc:
+            return SkillResult(False, f"Delete failed: {exc}")
