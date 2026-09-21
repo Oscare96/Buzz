@@ -27,7 +27,7 @@ def run_cli() -> int:
             for action in pending:
                 answer = input(f"Confirm {action['skill']}? [y/N]: ").strip().lower()
                 if answer in {"y", "yes"}:
-                    result = runtime.router.execute(action["skill"], confirmed=True, **action["arguments"])
+                    result = runtime.confirm(action["skill"], action["arguments"], action["approval_token"])
                     print(f"Buzz: {result.message}")
             pending_names = {item["skill"] for item in pending}
             for action in response.metadata.get("actions", []):
