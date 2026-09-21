@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 """Buzz application entry point."""
 
-from buzz.core.orchestrator import BuzzOrchestrator
+from buzz.cli import run_cli
 
 
 def main() -> int:
-    buzz = BuzzOrchestrator()
-    print(f"Buzz core online. State: {buzz.state.value}")
-    return 0
+    return run_cli()
 
 
 if __name__ == "__main__":
