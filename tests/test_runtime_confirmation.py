@@ -24,6 +24,6 @@ def test_runtime_blocks_then_allows_exact_sensitive_action():
     response = runtime.handle(BuzzRequest("change demo"))
     pending = response.metadata["pending_confirmation"]
     assert pending and pending[0]["arguments"] == {"target":"demo"}
-    result = runtime.router.execute(pending[0]["skill"], confirmed=True, **pending[0]["arguments"])
+    result = runtime.confirm(pending[0]["skill"], pending[0]["arguments"], pending[0]["approval_token"])
     assert result.success and result.data["verified"] is True
     assert result.data["result"]["target"] == "demo"
