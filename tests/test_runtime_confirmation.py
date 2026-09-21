@@ -25,4 +25,5 @@ def test_runtime_blocks_then_allows_exact_sensitive_action():
     pending = response.metadata["pending_confirmation"]
     assert pending and pending[0]["arguments"] == {"target":"demo"}
     result = runtime.router.execute(pending[0]["skill"], confirmed=True, **pending[0]["arguments"])
-    assert result.success and result.data["target"] == "demo"
+    assert result.success and result.data["verified"] is True
+    assert result.data["result"]["target"] == "demo"
