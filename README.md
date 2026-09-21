@@ -1,73 +1,40 @@
-# Desktop clap → Jarvis-style welcome
+# Buzz
 
-Python script that listens to your default microphone and runs a **double-clap** welcome flow (Spotify, Chrome windows, ElevenLabs voice, Cursor). See constants at the top of `jarvis.py` for behavior and tuning.
+Buzz is a modular personal AI automation platform being built from the original Jarvis-style desktop clap project.
 
-## Setup
+## Current architecture
 
-From this project directory:
+Buzz separates AI reasoning from trusted execution. Requests flow through the core orchestrator, provider-neutral AI adapters, a permission-aware tool router, registered skills, verification, and audit/reporting layers.
+
+Core packages currently include:
+
+- `buzz/core` — orchestration, requests, and tool routing
+- `buzz/ai` — replaceable AI providers; OpenAI adapter included
+- `buzz/voice` — wake word, STT, TTS, and conversation sessions
+- `buzz/skills` — trusted capabilities such as computer control
+- `buzz/security` — risk levels, authorization, and audit models
+- `buzz/events` — proactive event model and event bus
+- `buzz/memory` — memory abstraction separated from secrets/operational state
+
+The original `jarvis.py` remains available during migration as the baseline implementation.
+
+## Security model
+
+Actions are classified from read-only through critical. System-changing and critical actions require confirmation before the tool router executes them. Secrets belong in a local `.env` file and are excluded from Git.
+
+## Development setup
 
 ```bash
+python -m venv .venv
+.venv\\Scripts\\activate
 python -m pip install -r requirements.txt
+copy .env.example .env
+pytest
+python main.py
 ```
 
-## Environment variables
+Populate the required provider keys in `.env` before enabling cloud AI or ElevenLabs voice.
 
-The script loads a **`.env` file** in the same folder as `jarvis.py` (via `python-dotenv`). You can also set variables in the shell.
+## Branches
 
-### Required (ElevenLabs welcome line)
-
-| Variable | Purpose |
-| -------- | ------- |
-| `ELEVENLABS_API_KEY` | API key from [ElevenLabs](https://elevenlabs.io). |
-| `ELEVENLABS_VOICE_ID` | Voice ID from the ElevenLabs app (My Voices / library). |
-
-Without these, the welcome speech is skipped (other actions may still run).
-
-### Optional
-
-| Variable | Purpose |
-| -------- | ------- |
-| `ELEVENLABS_MODEL_ID` | TTS model (default in code: `eleven_multilingual_v2`). |
-| `ELEVENLABS_OUTPUT_FORMAT` | e.g. `pcm_24000` (must match playback expectations). |
-| `ELEVENLABS_PCM_SAMPLE_RATE` | Override PCM sample rate if it differs from the format name. |
-| `JARVIS_WELCOME_CACHE_DIR` | Custom folder for cached welcome WAV (default: `.cache/jarvis_welcome/` under the project). |
-| `JARVIS_INPUT_DEVICE` | Optional mic override: **integer** index or **substring** of the device name. If unset, the script uses the Windows default; when that mic is silent, it auto-picks the loudest working input. List devices: `python -c "import sounddevice as sd; print(sd.query_devices())"`. |
-| `CLAUDE_CODE_URL` | URL opened for Claude in Chrome (default: new chat). |
-| `TASARADAR_URL` | URL opened for Tasaradar in Chrome (default: `https://tasaradar.com`). `BINANCE_BTC_URL` is still read as a fallback if set. |
-| `CHROME_NEW_WINDOW_WAIT_S` | Seconds to wait for a new Chrome window on Windows (default `25`). |
-| `CHROME_WINDOW_WIDTH` / `CHROME_WINDOW_HEIGHT` | Windowed Chrome size when not fullscreen. |
-
-Example `.env`:
-
-```env
-ELEVENLABS_API_KEY=your_key_here
-ELEVENLABS_VOICE_ID=your_voice_id_here
-```
-
-## Run
-
-```bash
-python jarvis.py
-```
-
-Allow the microphone if Windows prompts you. Stop with **Ctrl+C**.
-
-## Tuning
-
-Edit the constants at the top of `jarvis.py`:
-
-| Constant      | Effect                                                            |
-| ------------- | ----------------------------------------------------------------- |
-| `SPIKE_RATIO` | Increase if you get false triggers; decrease if claps are missed. |
-| `COOLDOWN_S`  | Minimum time between two logged claps.                            |
-| `BLOCK_MS`    | Larger = slightly less CPU, a bit less precise timing.            |
-| `MIN_RMS`     | Floor on how loud a block must be (helps in very quiet rooms).  |
-| `SAMPLE_RATE` | Try `48000` if your device does not like `44100`.                 |
-
-## Troubleshooting
-
-- **Wrong or quiet mic:** On startup the script probes your default Windows input. If it is silent, it **auto-selects** the loudest working mic. To force a specific device, set `JARVIS_INPUT_DEVICE` in `.env` (index or name substring from `sounddevice.query_devices()`).
-- **PortAudio / audio errors:** Update audio drivers or try another `SAMPLE_RATE`.
-- **No reaction to claps:** Lower `SPIKE_RATIO` slightly or speak/clap closer to the mic.
-- **Spam logs:** Raise `SPIKE_RATIO` or `COOLDOWN_S`.
-- **No welcome speech:** Set `ELEVENLABS_API_KEY` and `ELEVENLABS_VOICE_ID` in `.env` and restart the terminal so variables load.
+`main` preserves the fork baseline while active Buzz development happens on `develop`.
