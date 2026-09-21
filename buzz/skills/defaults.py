@@ -2,6 +2,7 @@
 
 from buzz.config.settings import Settings
 from buzz.integrations.home_assistant import HomeAssistantProvider
+from buzz.integrations.trading.alpaca import AlpacaTradingProvider
 from buzz.integrations.devops.github import GitHubDevOpsProvider
 from buzz.skills.computer import OpenApplicationSkill, OpenUrlSkill
 from buzz.skills.devops import PipelineFailureSkill, PipelineStatusSkill
@@ -11,12 +12,18 @@ from buzz.skills.home import HomeAccessControlSkill, HomeServiceSkill, HomeState
 from buzz.skills.registry import SkillRegistry
 from buzz.skills.shell import ShellCommandSkill
 from buzz.skills.system import SystemInfoSkill
+from buzz.skills.trading import PlaceOrderSkill, PortfolioSkill, PreviewOrderSkill
 
 
 def build_default_registry(settings: Settings | None = None) -> SkillRegistry:
     registry = SkillRegistry()
     for skill in (SystemInfoSkill(), OpenUrlSkill(), OpenApplicationSkill(), ReadFileSkill(), WriteFileSkill(), DeleteFileSkill(), ShellCommandSkill()):
         registry.register(skill)
+    if settings and settings.alpaca_enabled:
+        trading = AlpacaTradingProvider(settings.alpaca_api_key, settings.alpaca_secret_key, settings.alpaca_base_url)
+        registry.register(PortfolioSkill(trading))
+        registry.register(PreviewOrderSkill(trading))
+        registry.register(PlaceOrderSkill(trading))
     if settings and settings.github_enabled:
         github = GitHubDevOpsProvider(settings.github_token)
         registry.register(PipelineStatusSkill(github))
