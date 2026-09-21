@@ -13,6 +13,9 @@ class Settings:
     home_assistant_url: str = ""
     home_assistant_token: str = ""
     github_token: str = ""
+    alpaca_api_key: str = ""
+    alpaca_secret_key: str = ""
+    alpaca_base_url: str = "https://paper-api.alpaca.markets"
 
     @classmethod
     def load(cls) -> "Settings":
@@ -24,6 +27,9 @@ class Settings:
             home_assistant_url=os.getenv("HOME_ASSISTANT_URL","").strip(),
             home_assistant_token=os.getenv("HOME_ASSISTANT_TOKEN","").strip(),
             github_token=os.getenv("BUZZ_GITHUB_TOKEN","").strip(),
+            alpaca_api_key=os.getenv("ALPACA_API_KEY","").strip(),
+            alpaca_secret_key=os.getenv("ALPACA_SECRET_KEY","").strip(),
+            alpaca_base_url=os.getenv("ALPACA_BASE_URL","https://paper-api.alpaca.markets").strip(),
         )
 
     def validate_ai(self) -> None:
@@ -36,3 +42,7 @@ class Settings:
     @property
     def github_enabled(self) -> bool:
         return bool(self.github_token)
+
+    @property
+    def alpaca_enabled(self) -> bool:
+        return bool(self.alpaca_api_key and self.alpaca_secret_key)
