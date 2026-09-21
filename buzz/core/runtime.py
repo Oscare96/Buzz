@@ -11,7 +11,7 @@ from buzz.core.router import ToolRouter
 
 
 SYSTEM_INSTRUCTION = """You are Buzz's planning brain. Return JSON only with keys reply and actions.
-Each action is {"skill": string, "arguments": object, "reason": string}.
+Each action contains skill, arguments, and reason fields.
 Never invent a skill. Available skills: {skills}.
 If no tool is required, actions must be an empty array.
 Buzz executes requested capabilities itself; do not tell the user to perform a supported action manually.
