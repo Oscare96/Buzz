@@ -16,6 +16,10 @@ class DevOpsProvider(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    def pipeline_failure(self, repository: str) -> dict[str, Any]:
+        raise NotImplementedError
+
+    @abstractmethod
     def run_pipeline(self, repository: str, workflow: str, ref: str) -> dict[str, Any]:
         raise NotImplementedError
 
