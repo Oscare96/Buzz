@@ -12,6 +12,7 @@ class Settings:
     elevenlabs_voice_id: str
     home_assistant_url: str = ""
     home_assistant_token: str = ""
+    github_token: str = ""
 
     @classmethod
     def load(cls) -> "Settings":
@@ -22,6 +23,7 @@ class Settings:
             elevenlabs_voice_id=os.getenv("ELEVENLABS_VOICE_ID","").strip(),
             home_assistant_url=os.getenv("HOME_ASSISTANT_URL","").strip(),
             home_assistant_token=os.getenv("HOME_ASSISTANT_TOKEN","").strip(),
+            github_token=os.getenv("BUZZ_GITHUB_TOKEN","").strip(),
         )
 
     def validate_ai(self) -> None:
@@ -30,3 +32,7 @@ class Settings:
     @property
     def home_assistant_enabled(self) -> bool:
         return bool(self.home_assistant_url and self.home_assistant_token)
+
+    @property
+    def github_enabled(self) -> bool:
+        return bool(self.github_token)
