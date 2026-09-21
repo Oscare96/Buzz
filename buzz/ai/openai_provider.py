@@ -19,6 +19,15 @@ class OpenAIProvider(AIProvider):
         response = self.client.responses.create(
             model=self.model,
             input=message,
-            text={"format": {"type": "json_object"}},
+            text={"format": {"type": "json_schema", "name": "buzz_plan", "strict": True, "schema": {
+                "type": "object",
+                "properties": {
+                    "reply": {"type": "string"},
+                    "actions": {"type": "array", "items": {"type": "object", "properties": {
+                        "skill": {"type": "string"}, "arguments": {"type": "object"}, "reason": {"type": "string"}
+                    }, "required": ["skill", "arguments", "reason"], "additionalProperties": False}}
+                },
+                "required": ["reply", "actions"], "additionalProperties": False
+            }}},
         )
         return AIResponse(text=response.output_text, provider=self.name, model=self.model)
