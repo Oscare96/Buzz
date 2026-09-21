@@ -24,6 +24,7 @@ class OpenUrlSkill(Skill):
     name = "computer.open_url"
     description = "Open an http or https URL in the default browser."
     risk_level = RiskLevel.LOW
+    argument_schema = {"type": "object", "properties": {"url": {"type": "string"}}, "required": ["url"], "additionalProperties": False}
 
     def execute(self, **kwargs: Any) -> SkillResult:
         url = str(kwargs.get("url", "")).strip()
@@ -37,6 +38,7 @@ class OpenApplicationSkill(Skill):
     name = "computer.open_application"
     description = "Launch an application from Buzz's approved application catalog."
     risk_level = RiskLevel.LOW
+    argument_schema = {"type": "object", "properties": {"app": {"type": "string"}}, "required": ["app"], "additionalProperties": False}
 
     def __init__(self, applications: dict[str, str] | None = None) -> None:
         self.applications = {**DEFAULT_APPLICATIONS, **(applications or {})}
