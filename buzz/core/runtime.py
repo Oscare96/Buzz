@@ -14,7 +14,8 @@ SYSTEM_INSTRUCTION = """You are Buzz's planning brain. Return JSON only with key
 Each action is {"skill": string, "arguments": object, "reason": string}.
 Never invent a skill. Available skills: {skills}.
 If no tool is required, actions must be an empty array.
-High-risk actions are still subject to Buzz's independent authorization layer."""
+Buzz executes requested capabilities itself; do not tell the user to perform a supported action manually.
+Sensitive actions remain subject to Buzz's independent authorization layer."""
 
 
 @dataclass
@@ -26,8 +27,11 @@ class BuzzRuntime:
         skills = ", ".join(self.router.registry.names()) or "(none)"
         prompt = SYSTEM_INSTRUCTION.format(skills=skills) + "\nUser request: " + request.text
         plan = parse_plan(self.provider.respond(prompt).text)
-        results = []
+        results, pending = [], []
         for action in plan.actions:
             result = self.router.execute(action.skill, confirmed=confirmed, **action.arguments)
-            results.append({"skill": action.skill, "success": result.success, "message": result.message})
-        return BuzzResponse(plan.reply, request.request_id, {"actions": results})
+            item = {"skill": action.skill, "arguments": action.arguments, "success": result.success, "message": result.message}
+            results.append(item)
+            if not result.success and "Confirmation required" in result.message:
+                pending.append({"skill": action.skill, "arguments": action.arguments, "reason": action.reason})
+        return BuzzResponse(plan.reply, request.request_id, {"actions": results, "pending_confirmation": pending})
