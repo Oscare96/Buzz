@@ -14,6 +14,7 @@ class PortfolioSkill(Skill):
     name = "trading.portfolio"
     description = "Read the connected trading portfolio."
     risk_level = RiskLevel.READ
+    argument_schema = {"type":"object","properties":{},"additionalProperties":False}
 
     def __init__(self, provider: TradingProvider) -> None:
         self.provider = provider
@@ -26,6 +27,7 @@ class BotStatusSkill(Skill):
     name = "trading.bot_status"
     description = "Read trading bot status without changing it."
     risk_level = RiskLevel.READ
+    argument_schema = {"type":"object","properties":{},"additionalProperties":False}
 
     def __init__(self, provider: TradingProvider) -> None:
         self.provider = provider
@@ -38,6 +40,7 @@ class PreviewOrderSkill(Skill):
     name = "trading.preview_order"
     description = "Preview a proposed order without sending it to the broker."
     risk_level = RiskLevel.READ
+    argument_schema = {"type":"object","properties":{"symbol":{"type":"string"},"side":{"type":"string","enum":["buy","sell"]},"quantity":{"type":"number","exclusiveMinimum":0}},"required":["symbol","side","quantity"],"additionalProperties":False}
 
     def __init__(self, provider: TradingProvider) -> None:
         self.provider = provider
@@ -51,6 +54,7 @@ class PlaceOrderSkill(Skill):
     name = "trading.place_order"
     description = "Place a broker order only after Buzz authorization and explicit user confirmation."
     risk_level = RiskLevel.CRITICAL
+    argument_schema = {"type":"object","properties":{"symbol":{"type":"string"},"side":{"type":"string","enum":["buy","sell"]},"quantity":{"type":"number","exclusiveMinimum":0},"idempotency_key":{"type":"string"}},"required":["symbol","side","quantity"],"additionalProperties":False}
 
     def __init__(self, provider: TradingProvider) -> None:
         self.provider = provider
@@ -66,6 +70,7 @@ class SetBotEnabledSkill(Skill):
     name = "trading.set_bot_enabled"
     description = "Pause or resume a trading bot after user confirmation."
     risk_level = RiskLevel.HIGH
+    argument_schema = {"type":"object","properties":{"bot":{"type":"string"},"enabled":{"type":"boolean"}},"required":["bot","enabled"],"additionalProperties":False}
 
     def __init__(self, provider: TradingProvider) -> None:
         self.provider = provider
