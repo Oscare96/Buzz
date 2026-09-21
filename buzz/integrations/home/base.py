@@ -12,5 +12,6 @@ class HomeProvider(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def call_service(self, domain: str, service: str, entity_id: str) -> dict[str, Any]:
+    def call_service(self, domain: str, service: str, entity_id: str, data: dict[str, Any] | None = None) -> dict[str, Any]:
+        """Execute an authorized smart-home service through the gateway."""
         raise NotImplementedError
