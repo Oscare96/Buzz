@@ -21,10 +21,10 @@ Never commit the populated `.env`.
 ## Readiness
 
 ```powershell
-.\.venv\Scripts\python.exe main.py --status
+\.venv\Scripts\python.exe main.py --voice-check
 ```
 
-Do not start the live test until `voice_configured` is true.
+Do not start the live test until `ready_for_voice_test` is true. This verifies the credentials are present, the wake-model file exists, and Windows exposes a default microphone before Buzz opens a live audio stream.
 
 ## Live test
 
