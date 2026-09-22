@@ -51,7 +51,7 @@ def main() -> int:
             import uvicorn
         except ImportError as exc:
             raise SystemExit("Install requirements-api.txt before using --api.") from exc
-        uvicorn.run("buzz.api:app",host="127.0.0.1",port=8765,reload=False)
+        uvicorn.run("buzz.api:app",host="127.0.0.1",port=8787,reload=False)
         return 0
     return run_cli()
 
