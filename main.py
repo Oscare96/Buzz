@@ -8,14 +8,14 @@ from buzz.diagnostics import self_check
 
 def main() -> int:
     parser=argparse.ArgumentParser(description="Buzz personal AI automation platform")
-    parser.add_argument("--status",action="store_true",help="show local configuration and enabled capabilities without starting AI")
+    parser.add_argument("--status",action="store_true",help="show local configuration and enabled capabilities without starting AI")\n    parser.add_argument("--init",action="store_true",help="create/update local .env and generate a Buzz API token without printing it")
     parser.add_argument("--api",action="store_true",help="start the local Buzz API on 127.0.0.1")
     parser.add_argument("--voice",action="store_true",help="start wake-word-driven Buzz voice mode")
     parser.add_argument("--self-check",action="store_true",help="run local readiness checks before the first PC test")
     parser.add_argument("--check-pipeline",metavar="OWNER/REPO",help="check one GitHub pipeline and show any safe proactive proposal")
     parser.add_argument("--voice-check",action="store_true",help="check voice credentials, wake model, and microphone without starting Buzz")
     args=parser.parse_args()
-    if args.status:
+    if args.init:\n        from buzz.setup_local import initialize_local_env\n        print(json.dumps(initialize_local_env(),indent=2))\n        return 0\n    if args.status:
         print(json.dumps(status_report(),indent=2))
         return 0
     if args.self_check:
