@@ -16,6 +16,7 @@ class Settings:
     alpaca_api_key: str = ""
     alpaca_secret_key: str = ""
     alpaca_base_url: str = "https://paper-api.alpaca.markets"
+    api_token: str = ""
 
     @classmethod
     def load(cls) -> "Settings":
@@ -30,6 +31,7 @@ class Settings:
             alpaca_api_key=os.getenv("ALPACA_API_KEY","").strip(),
             alpaca_secret_key=os.getenv("ALPACA_SECRET_KEY","").strip(),
             alpaca_base_url=os.getenv("ALPACA_BASE_URL","https://paper-api.alpaca.markets").strip(),
+            api_token=os.getenv("BUZZ_API_TOKEN","").strip(),
         )
 
     def validate_ai(self) -> None:
