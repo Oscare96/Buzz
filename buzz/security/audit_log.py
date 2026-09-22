@@ -10,7 +10,8 @@ from buzz.security.audit import AuditEvent
 
 
 _SECRET_PATTERNS=(
-    re.compile(r"(?i)(authorization|api[_ -]?key|secret[_ -]?key|access[_ -]?token)\s*[=:]\s*[^;\s,]+"),
+    re.compile(r"(?i)authorization\s*[=:]\s*bearer\s+[A-Za-z0-9._-]+"),
+    re.compile(r"(?i)(api[_ -]?key|secret[_ -]?key|access[_ -]?token)\s*[=:]\s*[^;\s,]+"),
     re.compile(r"(?i)bearer\s+[A-Za-z0-9._-]+"),
 )
 
