@@ -8,7 +8,8 @@ def status_report(settings: Settings | None = None) -> dict:
     registry=build_default_registry(settings)
     return {
         "ai_configured": bool(settings.openai_api_key),
-        "voice_configured": bool(settings.elevenlabs_api_key and settings.elevenlabs_voice_id),
+        "voice_configured": bool(settings.openai_api_key and settings.elevenlabs_api_key and settings.elevenlabs_voice_id and settings.wake_model),
+        "wake_model_configured": bool(settings.wake_model),
         "github_configured": settings.github_enabled,
         "home_assistant_configured": settings.home_assistant_enabled,
         "alpaca_configured": settings.alpaca_enabled,
