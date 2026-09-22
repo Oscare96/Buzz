@@ -11,6 +11,7 @@ from buzz.core.planner import parse_plan
 from buzz.core.request import BuzzRequest, BuzzResponse
 from buzz.core.router import ToolRouter
 from buzz.security.approvals import ApprovalStore
+from buzz.security.audit import AuditEvent
 from buzz.memory.store import MemoryStore
 from buzz.memory.context import ConversationContext
 
@@ -50,6 +51,8 @@ class BuzzRuntime:
             results.append(item)
             if not result.success and "Confirmation required" in result.message:
                 approval = self.approvals.issue(action.skill, arguments)
+                if self.router.audit_log is not None:
+                    self.router.audit_log.write(AuditEvent(action.skill,"approval_issued",f"request_id={request.request_id}; approval_token_issued"))
                 pending.append({"skill": action.skill, "arguments": arguments, "reason": action.reason, "approval_token": approval.token})
         response = BuzzResponse(plan.reply, request.request_id, {"actions": results, "pending_confirmation": pending})
         if self.memory is not None:
@@ -59,5 +62,7 @@ class BuzzRuntime:
     def confirm(self, skill: str, arguments: dict, approval_token: str):
         if self.approvals is None or not self.approvals.consume(approval_token, skill, arguments):
             from buzz.skills.base import SkillResult
+            if self.router.audit_log is not None:
+                self.router.audit_log.write(AuditEvent(skill,"approval_rejected","Invalid, expired, reused, or mismatched approval."))
             return SkillResult(False, "Approval is invalid, expired, already used, or does not match this action.")
         return self.router.execute(skill, confirmed=True, **arguments)
