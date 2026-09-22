@@ -33,7 +33,7 @@ pytest
 python main.py
 ```
 
-Populate the required provider keys in `.env` before enabling cloud AI or ElevenLabs voice.
+Populate the required provider keys in `.env` before enabling cloud AI or ElevenLabs voice. On macOS/Linux use `.venv/bin/python`; on Windows use `.venv\\Scripts\\python.exe`.
 
 For the first Windows test, run `scripts/setup_windows.ps1`, add `OPENAI_API_KEY` to the local `.env`, then run `python main.py --self-check`. The full checklist is in `FIRST_TEST.md`.
 
@@ -46,7 +46,7 @@ pip install -r requirements-api.txt
 python main.py --api
 ```
 
-It binds to `127.0.0.1:8765` by default. Set `BUZZ_API_TOKEN` in `.env` to require a bearer token for control endpoints. The API includes health, status, request, approval, and recent audit endpoints. Do not expose it directly to the public internet. Remote/mobile access will be added behind authenticated secure transport.
+It binds to `127.0.0.1:8787` by default. Open `http://127.0.0.1:8787/` on the same computer for the Buzz Control Center. Control endpoints fail closed unless `BUZZ_API_TOKEN` is configured in `.env`. Run `python main.py --init` to safely generate a local API token without printing it. The API includes health, status, request, approval, pending-approval count, runtime status, and recent audit endpoints. The browser Control Center can submit requests and render explicit approval buttons for protected actions. Do not expose it directly to the public internet. Remote/mobile access will be added behind authenticated secure transport.
 
 ### Proactive pipeline check
 
