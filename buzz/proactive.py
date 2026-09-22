@@ -23,5 +23,6 @@ class ProactiveService:
                 "arguments":p.arguments,
                 "reason":p.reason,
                 "source_event_id":p.source_event_id,
+                "created_at":p.created_at,
             } for p in self.proposals.list()],
         }
