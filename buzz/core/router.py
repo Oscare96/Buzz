@@ -7,6 +7,7 @@ from typing import Any
 from uuid import uuid4
 
 from buzz.core.verification import verify_success
+from buzz.core.arguments import validate_arguments
 from buzz.security.audit import AuditEvent
 from buzz.security.audit_log import AuditLog
 from buzz.security.policy import authorize
@@ -22,6 +23,11 @@ class ToolRouter:
     def execute(self, skill_name: str, *, confirmed: bool = False, **kwargs: Any) -> SkillResult:
         execution_id = uuid4().hex
         skill = self.registry.get(skill_name)
+        validation_error = validate_arguments(skill.argument_schema, kwargs)
+        if validation_error:
+            result = SkillResult(False, validation_error, {"execution_id": execution_id})
+            self._audit(skill_name, "blocked", execution_id, validation_error)
+            return result
         decision = authorize(skill.risk_level, confirmed=confirmed)
         if not decision.allowed:
             result = SkillResult(False, decision.reason, {"execution_id": execution_id})
