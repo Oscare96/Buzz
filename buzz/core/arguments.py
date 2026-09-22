@@ -23,6 +23,12 @@ def validate_arguments(schema:dict[str,Any],arguments:dict[str,Any])->str|None:
         if expected=="array":
             if "minItems" in spec and len(value) < spec["minItems"]: return f"Argument {key} has too few items."
             if "maxItems" in spec and len(value) > spec["maxItems"]: return f"Argument {key} has too many items."
+            item_spec=spec.get("items")
+            if isinstance(item_spec,dict):
+                item_type=item_spec.get("type")
+                for index,item in enumerate(value):
+                    if item_type=="string" and not isinstance(item,str): return f"Argument {key}[{index}] must be string."
+                    if item_type=="number" and (not isinstance(item,(int,float)) or isinstance(item,bool)): return f"Argument {key}[{index}] must be number."
         if "enum" in spec and value not in spec["enum"]: return f"Argument {key} must be one of: {', '.join(map(str,spec['enum']))}."
         if isinstance(value,(int,float)) and not isinstance(value,bool):
             if "exclusiveMinimum" in spec and value <= spec["exclusiveMinimum"]: return f"Argument {key} must be greater than {spec['exclusiveMinimum']}."
