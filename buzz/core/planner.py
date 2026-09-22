@@ -23,9 +23,13 @@ def parse_plan(raw: str) -> ActionPlan:
     actions = payload.get("actions", [])
     if not isinstance(reply, str) or not isinstance(actions, list):
         raise PlanError("AI plan has invalid reply/actions fields.")
+    if len(actions)>16:
+        raise PlanError("AI plan contains too many actions.")
+    if len(reply)>12000:
+        raise PlanError("AI reply is too large.")
     parsed = []
     for item in actions:
-        if not isinstance(item, dict) or not isinstance(item.get("skill"), str):
+        if not isinstance(item, dict) or not isinstance(item.get("skill"), str) or not item.get("skill").strip() or len(item.get("skill",""))>128:
             raise PlanError("Each action requires a skill name.")
         arguments = item.get("arguments", {})
         if not isinstance(arguments, dict):
