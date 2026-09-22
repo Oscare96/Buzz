@@ -4,16 +4,22 @@ import argparse
 import json
 from buzz.cli import run_cli
 from buzz.status import status_report
+from buzz.diagnostics import self_check
 
 def main() -> int:
     parser=argparse.ArgumentParser(description="Buzz personal AI automation platform")
     parser.add_argument("--status",action="store_true",help="show local configuration and enabled capabilities without starting AI")
     parser.add_argument("--api",action="store_true",help="start the local Buzz API on 127.0.0.1")
     parser.add_argument("--voice",action="store_true",help="start wake-word-driven Buzz voice mode")
+    parser.add_argument("--self-check",action="store_true",help="run local readiness checks before the first PC test")
     args=parser.parse_args()
     if args.status:
         print(json.dumps(status_report(),indent=2))
         return 0
+    if args.self_check:
+        report=self_check()
+        print(json.dumps(report,indent=2))
+        return 0 if report["ready_for_core_test"] else 1
     if args.voice:
         from buzz.app import build_runtime
         from buzz.voice.assistant import VoiceAssistant
