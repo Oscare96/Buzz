@@ -35,6 +35,17 @@ python main.py
 
 Populate the required provider keys in `.env` before enabling cloud AI or ElevenLabs voice.
 
+### Local API
+
+Buzz also has a localhost-only API foundation for future desktop and mobile clients:
+
+```bash
+pip install -r requirements-api.txt
+python main.py --api
+```
+
+It binds to `127.0.0.1:8765` by default. Do not expose it directly to the public internet. Remote/mobile access will be added behind authentication and a secure transport layer.
+
 ## Branches
 
 `main` preserves the fork baseline while active Buzz development happens on `develop`.
