@@ -23,8 +23,16 @@ class VoiceLoop:
         response=self.runtime.handle(BuzzRequest(text=text,source="voice"))
         if response.text:self.tts.speak(response.text)
         return response.text
-    def conversation(self,seconds:float=6.0,max_turns:int=8)->None:
+    def conversation(self,seconds:float=6.0,max_turns:int=8,max_silence_turns:int=2)->None:
         self.session.activate()
-        turns=0
+        turns=0; silence_turns=0
         while self.session.active and not self.session.expired() and turns<max_turns:
-            self.listen_once(seconds=seconds); turns+=1
+            response=self.listen_once(seconds=seconds); turns+=1
+            if not self.session.active: break
+            if response:
+                silence_turns=0
+            else:
+                silence_turns+=1
+                if silence_turns>=max_silence_turns:
+                    self.session.deactivate()
+                    break
