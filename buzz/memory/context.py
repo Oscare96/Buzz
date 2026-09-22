@@ -19,9 +19,12 @@ class ConversationContext:
         clean=[]
         for item in value[-self.max_exchanges:]:
             if isinstance(item,dict) and isinstance(item.get("user"),str) and isinstance(item.get("assistant"),str):
-                clean.append({"user":item["user"],"assistant":item["assistant"]})
+                user=item["user"][:4000]; assistant=item["assistant"][:8000]
+                if not is_sensitive_text(user) and not is_sensitive_text(assistant):
+                    clean.append({"user":user,"assistant":assistant})
         return clean
     def remember(self,user:str,assistant:str)->bool:
+        user=user[:4000]; assistant=assistant[:8000]
         if is_sensitive_text(user) or is_sensitive_text(assistant):
             return False
         history=self.recent(); history.append({"user":user,"assistant":assistant})
