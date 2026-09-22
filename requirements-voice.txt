@@ -1,0 +1,6 @@
+-r requirements-core.txt
+numpy>=1.24,<3
+sounddevice>=0.4.6,<0.6
+elevenlabs>=1.50,<3
+openwakeword>=0.6,<1
+websockets>=13
