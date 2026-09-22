@@ -4,7 +4,6 @@ from pathlib import Path
 import tempfile
 from buzz.core.request import BuzzRequest
 from buzz.core.runtime import BuzzRuntime
-from buzz.voice.recorder import record_wav
 from buzz.voice.session import VoiceSession
 from buzz.voice.speech_to_text import SpeechToText
 from buzz.voice.text_to_speech import TextToSpeech
@@ -13,6 +12,7 @@ class VoiceLoop:
     def __init__(self,runtime:BuzzRuntime,stt:SpeechToText,tts:TextToSpeech,session:VoiceSession|None=None)->None:
         self.runtime=runtime; self.stt=stt; self.tts=tts; self.session=session or VoiceSession()
     def listen_once(self,seconds:float=6.0)->str:
+        from buzz.voice.recorder import record_wav
         with tempfile.TemporaryDirectory(prefix="buzz-") as temp:
             audio=record_wav(Path(temp)/"utterance.wav",seconds=seconds); transcript=self.stt.transcribe(audio)
         text=transcript.text.strip()
