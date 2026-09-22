@@ -14,7 +14,7 @@ class GitHubDevOpsProvider(DevOpsProvider):
         self.base="https://api.github.com"
     def _repository(self,repository:str)->str:
         repository=repository.strip()
-        if not _REPOSITORY_RE.fullmatch(repository):
+        if not _REPOSITORY_RE.fullmatch(repository) or any(part in {".",".."} for part in repository.split("/")):
             raise ValueError("Repository must use owner/repo format.")
         return repository
     def _get(self,path:str)->dict[str,Any]:
