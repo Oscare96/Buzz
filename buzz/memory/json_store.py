@@ -11,8 +11,13 @@ class JsonMemoryStore(MemoryStore):
         self.path=path; self._lock=RLock()
     def _load(self)->dict[str,Any]:
         if not self.path.exists(): return {}
-        try: return json.loads(self.path.read_text(encoding="utf-8"))
-        except (OSError,json.JSONDecodeError): return {}
+        try:
+            value=json.loads(self.path.read_text(encoding="utf-8"))
+            return value if isinstance(value,dict) else {}
+        except OSError:
+            return {}
+        except json.JSONDecodeError as exc:
+            raise RuntimeError(f"Buzz memory file is corrupted: {self.path}. Refusing to overwrite it.") from exc
     def put(self,namespace:str,key:str,value:Any)->None:
         with self._lock:
             data=self._load(); data.setdefault(namespace,{})[key]=value
