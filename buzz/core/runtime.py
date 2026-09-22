@@ -12,6 +12,7 @@ from buzz.core.request import BuzzRequest, BuzzResponse
 from buzz.core.router import ToolRouter
 from buzz.security.approvals import ApprovalStore
 from buzz.memory.store import MemoryStore
+from buzz.memory.context import ConversationContext
 
 
 SYSTEM_INSTRUCTION = """You are Buzz's planning brain. Return JSON only with keys reply and actions.
@@ -35,7 +36,7 @@ class BuzzRuntime:
 
     def handle(self, request: BuzzRequest, *, confirmed: bool = False) -> BuzzResponse:
         skills = json.dumps(self.router.registry.planner_specs(), separators=(",", ":"))
-        context = self.memory.get("conversation","last_exchange") if self.memory else None
+        context = ConversationContext(self.memory).recent() if self.memory else []
         context_text = ("\nRecent context: " + json.dumps(context,ensure_ascii=False)) if context else ""
         prompt = SYSTEM_INSTRUCTION.format(skills=skills) + context_text + "\nUser request: " + request.text
         plan = parse_plan(self.provider.respond(prompt).text)
@@ -52,7 +53,7 @@ class BuzzRuntime:
                 pending.append({"skill": action.skill, "arguments": arguments, "reason": action.reason, "approval_token": approval.token})
         response = BuzzResponse(plan.reply, request.request_id, {"actions": results, "pending_confirmation": pending})
         if self.memory is not None:
-            self.memory.put("conversation","last_exchange",{"user":request.text,"assistant":plan.reply})
+            ConversationContext(self.memory).remember(request.text,plan.reply)
         return response
 
     def confirm(self, skill: str, arguments: dict, approval_token: str):
