@@ -1,2 +1,4 @@
 -r requirements-core.txt
 pytest>=8,<9
+
+-r requirements-api.txt
