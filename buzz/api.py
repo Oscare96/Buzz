@@ -37,7 +37,11 @@ class ApprovalBody(BaseModel):
     arguments: dict
     approval_token: str = Field(min_length=1,max_length=128)
 
-@app.get("/",response_class=HTMLResponse)\ndef dashboard():\n    return dashboard_html()\n\n@app.get("/health")
+@app.get("/",response_class=HTMLResponse)
+def dashboard():
+    return dashboard_html()
+
+@app.get("/health")
 def health(): return {"status":"ok"}
 
 @app.get("/status",dependencies=[Depends(require_api_token)])
