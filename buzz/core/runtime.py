@@ -7,7 +7,7 @@ import json
 from uuid import uuid4
 
 from buzz.ai.provider import AIProvider
-from buzz.core.planner import parse_plan
+from buzz.core.planner import parse_plan, PlanError
 from buzz.core.request import BuzzRequest, BuzzResponse
 from buzz.core.router import ToolRouter
 from buzz.security.approvals import ApprovalStore
@@ -40,7 +40,12 @@ class BuzzRuntime:
         context = ConversationContext(self.memory).recent() if self.memory else []
         context_text = ("\nRecent context: " + json.dumps(context,ensure_ascii=False)) if context else ""
         prompt = SYSTEM_INSTRUCTION.format(skills=skills) + context_text + "\nUser request: " + request.text
-        plan = parse_plan(self.provider.respond(prompt).text)
+        try:
+            plan = parse_plan(self.provider.respond(prompt).text)
+        except PlanError as exc:
+            if self.router.audit_log is not None:
+                self.router.audit_log.write(AuditEvent("ai.plan","rejected",f"request_id={request.request_id}; {exc}"))
+            return BuzzResponse("I couldn't safely interpret that plan. Please try the request again.",request.request_id,{"actions":[],"pending_confirmation":[],"plan_error":True})
         results, pending = [], []
         for action in plan.actions:
             arguments = dict(action.arguments)
