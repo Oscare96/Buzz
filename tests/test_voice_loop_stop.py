@@ -18,8 +18,10 @@ class TTS(TextToSpeech):
     def stop(self): self.stopped=True
 
 def test_spoken_stop_deactivates_session(monkeypatch,tmp_path):
-    import buzz.voice.recorder as recorder
-    monkeypatch.setattr(recorder,"record_wav",lambda path,seconds:path)
+    import sys,types
+    fake=types.ModuleType("buzz.voice.recorder")
+    fake.record_wav=lambda path,seconds:path
+    monkeypatch.setitem(sys.modules,"buzz.voice.recorder",fake)
     session=VoiceSession(); session.activate(); tts=TTS()
     loop=VoiceLoop(BuzzRuntime(Planner(),ToolRouter(SkillRegistry())),STT(),tts,session)
     assert loop.listen_once(0.01)==""
