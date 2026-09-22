@@ -18,4 +18,7 @@ def validate_arguments(schema:dict[str,Any],arguments:dict[str,Any])->str|None:
         valid=(expected=="string" and isinstance(value,str)) or (expected=="boolean" and isinstance(value,bool)) or (expected=="number" and isinstance(value,(int,float)) and not isinstance(value,bool)) or (expected=="integer" and isinstance(value,int) and not isinstance(value,bool)) or (expected=="object" and isinstance(value,dict)) or (expected=="array" and isinstance(value,list)) or expected is None
         if not valid: return f"Argument {key} must be {expected}."
         if "enum" in spec and value not in spec["enum"]: return f"Argument {key} must be one of: {', '.join(map(str,spec['enum']))}."
+        if isinstance(value,(int,float)) and not isinstance(value,bool):
+            if "exclusiveMinimum" in spec and value <= spec["exclusiveMinimum"]: return f"Argument {key} must be greater than {spec['exclusiveMinimum']}."
+            if "minimum" in spec and value < spec["minimum"]: return f"Argument {key} must be at least {spec['minimum']}."
     return None
