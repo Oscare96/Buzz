@@ -17,6 +17,11 @@ class EventBus:
     def subscribe(self, kind: str, handler: EventHandler) -> None:
         self._handlers[kind].append(handler)
 
-    def publish(self, event: BuzzEvent) -> None:
+    def publish(self, event: BuzzEvent) -> list[Exception]:
+        errors=[]
         for handler in tuple(self._handlers.get(event.kind, ())):
-            handler(event)
+            try:
+                handler(event)
+            except Exception as exc:
+                errors.append(exc)
+        return errors
