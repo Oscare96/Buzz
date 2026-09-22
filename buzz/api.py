@@ -3,7 +3,6 @@ from __future__ import annotations
 from fastapi import Depends, FastAPI, Header, HTTPException
 from pydantic import BaseModel, Field
 from secrets import compare_digest
-import os
 from pathlib import Path
 from buzz.app import build_runtime
 from buzz.core.request import BuzzRequest
