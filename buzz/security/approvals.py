@@ -34,3 +34,9 @@ class ApprovalStore:
     def consume(self, token: str, skill: str, arguments: dict[str, Any]) -> bool:
         approval = self._items.pop(token, None)
         return bool(approval and approval.fingerprint == action_fingerprint(skill, arguments) and monotonic() <= approval.expires_at)
+
+    def pending_count(self) -> int:
+        now=monotonic()
+        expired=[token for token,item in self._items.items() if now>item.expires_at]
+        for token in expired: self._items.pop(token,None)
+        return len(self._items)
