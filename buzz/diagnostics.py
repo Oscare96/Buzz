@@ -24,4 +24,5 @@ def self_check(settings: Settings | None = None) -> dict:
     checks.append({"name":"core_skills","ok":len(capabilities["skills"])>=4,"detail":", ".join(capabilities["skills"])})
     checks.append({"name":"openai_key","ok":bool(settings.openai_api_key),"detail":"configured" if settings.openai_api_key else "missing"})
     checks.append({"name":"platform","ok":True,"detail":platform.platform()})
-    return {"ready_for_core_test":all(c["ok"] for c in checks if c["name"]!="openai_key") and bool(settings.openai_api_key),"checks":checks,"capabilities":capabilities}
+    checks.append({"name":"api_token","ok":bool(settings.api_token),"detail":"configured" if settings.api_token else "missing (required before API/mobile control)"})
+    return {"ready_for_core_test":all(c["ok"] for c in checks if c["name"] not in {"openai_key","api_token"}) and bool(settings.openai_api_key),"checks":checks,"capabilities":capabilities}
