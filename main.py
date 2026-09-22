@@ -13,6 +13,7 @@ def main() -> int:
     parser.add_argument("--voice",action="store_true",help="start wake-word-driven Buzz voice mode")
     parser.add_argument("--self-check",action="store_true",help="run local readiness checks before the first PC test")
     parser.add_argument("--check-pipeline",metavar="OWNER/REPO",help="check one GitHub pipeline and show any safe proactive proposal")
+    parser.add_argument("--voice-check",action="store_true",help="check voice credentials, wake model, and microphone without starting Buzz")
     args=parser.parse_args()
     if args.status:
         print(json.dumps(status_report(),indent=2))
@@ -21,6 +22,11 @@ def main() -> int:
         report=self_check()
         print(json.dumps(report,indent=2))
         return 0 if report["ready_for_core_test"] else 1
+    if args.voice_check:
+        from buzz.voice.diagnostics import voice_check
+        report=voice_check()
+        print(json.dumps(report,indent=2))
+        return 0 if report["ready_for_voice_test"] else 1
     if args.check_pipeline:
         from buzz.config.settings import Settings
         from buzz.integrations.devops.github import GitHubDevOpsProvider
