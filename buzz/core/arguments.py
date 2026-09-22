@@ -28,6 +28,7 @@ def validate_arguments(schema:dict[str,Any],arguments:dict[str,Any])->str|None:
                 item_type=item_spec.get("type")
                 for index,item in enumerate(value):
                     if item_type=="string" and not isinstance(item,str): return f"Argument {key}[{index}] must be string."
+                    if item_type=="string" and "maxLength" in item_spec and len(item)>item_spec["maxLength"]: return f"Argument {key}[{index}] is too long."
                     if item_type=="number" and (not isinstance(item,(int,float)) or isinstance(item,bool)): return f"Argument {key}[{index}] must be number."
         if "enum" in spec and value not in spec["enum"]: return f"Argument {key} must be one of: {', '.join(map(str,spec['enum']))}."
         if isinstance(value,(int,float)) and not isinstance(value,bool):
