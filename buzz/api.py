@@ -3,6 +3,7 @@ from __future__ import annotations
 from fastapi import Depends, FastAPI, Header, HTTPException
 from pydantic import BaseModel, Field
 from secrets import compare_digest
+import os
 from pathlib import Path
 from buzz.app import build_runtime
 from buzz.core.request import BuzzRequest
@@ -15,7 +16,7 @@ app=FastAPI(title="Buzz API",version="0.1.0")
 def require_api_token(authorization: str | None = Header(default=None)) -> None:
     expected=Settings.load().api_token
     if not expected:
-        return
+        raise HTTPException(status_code=503,detail="BUZZ_API_TOKEN is required before using Buzz control API endpoints.")
     supplied = authorization or ""
     if not compare_digest(supplied, f"Bearer {expected}"):
         raise HTTPException(status_code=401,detail="Invalid or missing Buzz API token.")
