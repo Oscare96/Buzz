@@ -46,9 +46,15 @@ class BuzzRuntime:
             if self.router.audit_log is not None:
                 self.router.audit_log.write(AuditEvent("ai.plan","rejected",f"request_id={request.request_id}; {exc}"))
             return BuzzResponse("I couldn't safely interpret that plan. Please try the request again.",request.request_id,{"actions":[],"pending_confirmation":[],"plan_error":True})
-        results, pending = [], []\n        seen_actions: set[tuple[str,str]] = set()
+        results, pending = [], []
+        seen_actions: set[tuple[str,str]] = set()
         for action in plan.actions:
-            arguments = dict(action.arguments)\n            fingerprint=(action.skill,json.dumps(arguments,sort_keys=True,separators=(",",":"),default=str))\n            if fingerprint in seen_actions:\n                results.append({"skill":action.skill,"arguments":arguments,"success":False,"message":"Duplicate action skipped."})\n                continue\n            seen_actions.add(fingerprint)
+            arguments = dict(action.arguments)
+            fingerprint=(action.skill,json.dumps(arguments,sort_keys=True,separators=(",",":"),default=str))
+            if fingerprint in seen_actions:
+                results.append({"skill":action.skill,"arguments":arguments,"success":False,"message":"Duplicate action skipped."})
+                continue
+            seen_actions.add(fingerprint)
             if action.skill == "trading.place_order" and not arguments.get("idempotency_key"):
                 arguments["idempotency_key"] = uuid4().hex
             result = self.router.execute(action.skill, confirmed=confirmed, **arguments)
