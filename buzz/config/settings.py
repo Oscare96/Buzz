@@ -10,7 +10,6 @@ class Settings:
     openai_api_key: str
     elevenlabs_api_key: str
     elevenlabs_voice_id: str
-    wake_model: str = ""
     home_assistant_url: str = ""
     home_assistant_token: str = ""
     github_token: str = ""
@@ -18,6 +17,7 @@ class Settings:
     alpaca_secret_key: str = ""
     alpaca_base_url: str = "https://paper-api.alpaca.markets"
     api_token: str = ""
+    wake_model: str = ""
 
     @classmethod
     def load(cls) -> "Settings":
