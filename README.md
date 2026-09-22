@@ -35,6 +35,8 @@ python main.py
 
 Populate the required provider keys in `.env` before enabling cloud AI or ElevenLabs voice.
 
+For the first Windows test, run `scripts/setup_windows.ps1`, add `OPENAI_API_KEY` to the local `.env`, then run `python main.py --self-check`. The full checklist is in `FIRST_TEST.md`.
+
 ### Local API
 
 Buzz also has a localhost-only API foundation for future desktop and mobile clients:
@@ -44,7 +46,17 @@ pip install -r requirements-api.txt
 python main.py --api
 ```
 
-It binds to `127.0.0.1:8765` by default. Do not expose it directly to the public internet. Remote/mobile access will be added behind authentication and a secure transport layer.
+It binds to `127.0.0.1:8765` by default. Set `BUZZ_API_TOKEN` in `.env` to require a bearer token for control endpoints. The API includes health, status, request, approval, and recent audit endpoints. Do not expose it directly to the public internet. Remote/mobile access will be added behind authenticated secure transport.
+
+### Proactive pipeline check
+
+With a least-privilege `BUZZ_GITHUB_TOKEN` configured, Buzz can inspect a repository's latest GitHub Actions run without changing anything:
+
+```bash
+python main.py --check-pipeline Oscare96/Buzz
+```
+
+If a failed run contains an exact workflow path and branch, Buzz can produce a rerun proposal. It does not execute the rerun automatically; the normal authorization and confirmation path still applies.
 
 ## Branches
 
