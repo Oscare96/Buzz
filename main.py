@@ -12,6 +12,7 @@ def main() -> int:
     parser.add_argument("--api",action="store_true",help="start the local Buzz API on 127.0.0.1")
     parser.add_argument("--voice",action="store_true",help="start wake-word-driven Buzz voice mode")
     parser.add_argument("--self-check",action="store_true",help="run local readiness checks before the first PC test")
+    parser.add_argument("--check-pipeline",metavar="OWNER/REPO",help="check one GitHub pipeline and show any safe proactive proposal")
     args=parser.parse_args()
     if args.status:
         print(json.dumps(status_report(),indent=2))
@@ -20,6 +21,16 @@ def main() -> int:
         report=self_check()
         print(json.dumps(report,indent=2))
         return 0 if report["ready_for_core_test"] else 1
+    if args.check_pipeline:
+        from buzz.config.settings import Settings
+        from buzz.integrations.devops.github import GitHubDevOpsProvider
+        from buzz.proactive import ProactiveService
+        settings=Settings.load()
+        if not settings.github_enabled:
+            raise SystemExit("BUZZ_GITHUB_TOKEN is missing. Add a least-privilege token to .env.")
+        result=ProactiveService(GitHubDevOpsProvider(settings.github_token)).check_pipeline(args.check_pipeline)
+        print(json.dumps(result,indent=2))
+        return 0
     if args.voice:
         from buzz.app import build_runtime
         from buzz.voice.assistant import VoiceAssistant
