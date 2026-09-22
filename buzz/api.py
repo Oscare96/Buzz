@@ -9,7 +9,8 @@ from buzz.app import build_runtime
 from buzz.core.request import BuzzRequest
 from buzz.status import status_report
 from buzz.config.settings import Settings
-from buzz.security.audit_log import AuditLog\nfrom buzz.dashboard import dashboard_html
+from buzz.security.audit_log import AuditLog
+from buzz.dashboard import dashboard_html
 
 app=FastAPI(title="Buzz API",version="0.1.0")
 
