@@ -54,7 +54,7 @@ class PlaceOrderSkill(Skill):
     name = "trading.place_order"
     description = "Place a broker order only after Buzz authorization and explicit user confirmation."
     risk_level = RiskLevel.CRITICAL
-    argument_schema = {"type":"object","properties":{"symbol":{"type":"string"},"side":{"type":"string","enum":["buy","sell"]},"quantity":{"type":"number","exclusiveMinimum":0},"idempotency_key":{"type":"string"}},"required":["symbol","side","quantity"],"additionalProperties":False}
+    argument_schema = {"type":"object","properties":{"symbol":{"type":"string"},"side":{"type":"string","enum":["buy","sell"]},"quantity":{"type":"number","exclusiveMinimum":0},"idempotency_key":{"type":"string","minLength":8,"maxLength":64}},"required":["symbol","side","quantity","idempotency_key"],"additionalProperties":False}
 
     def __init__(self, provider: TradingProvider) -> None:
         self.provider = provider
