@@ -23,7 +23,7 @@ class ShellCommandSkill(Skill):
     name="computer.run_command"
     description="Run an explicitly authorized local command without using a shell interpreter."
     risk_level=RiskLevel.CRITICAL
-    argument_schema={"type":"object","properties":{"argv":{"type":"array","items":{"type":"string"}},"cwd":{"type":["string","null"]}},"required":["argv"],"additionalProperties":False}
+    argument_schema={"type":"object","properties":{"argv":{"type":"array","items":{"type":"string"},"minItems":1,"maxItems":64},"cwd":{"type":["string","null"]}},"required":["argv"],"additionalProperties":False}
     def execute(self, **kwargs: Any) -> SkillResult:
         argv=kwargs.get("argv")
         if not isinstance(argv,list) or not argv or not all(isinstance(v,str) and v for v in argv):
