@@ -20,6 +20,10 @@ class ProposalStore:
     def __init__(self)->None:
         self._items: dict[str,ActionProposal]={}
     def add(self,proposal:ActionProposal)->None:
+        fingerprint=(proposal.skill,repr(sorted(proposal.arguments.items())),proposal.source_event_id)
+        for existing in self._items.values():
+            if (existing.skill,repr(sorted(existing.arguments.items())),existing.source_event_id)==fingerprint:
+                return
         self._items[proposal.proposal_id]=proposal
     def list(self)->tuple[ActionProposal,...]:
         return tuple(self._items.values())
