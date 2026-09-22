@@ -63,7 +63,7 @@ def audit(limit: int = 50):
     limit=max(1,min(limit,200))
     return {"events":AuditLog(Path(".cache/buzz/audit.jsonl")).read_recent(limit)}
 
-@app.get("/runtime-status",dependencies=[Depends(require_api_token)])
+@app.get("/pending-approvals",dependencies=[Depends(require_api_token)])\ndef pending_approvals():\n    rt=runtime()\n    return {"count":rt.approvals.pending_count() if rt.approvals else 0}\n\n@app.get("/runtime-status",dependencies=[Depends(require_api_token)])
 def runtime_status():
     rt=runtime()
     return {"pending_approvals":rt.approvals.pending_count() if rt.approvals else 0,"skills":rt.router.registry.names()}
