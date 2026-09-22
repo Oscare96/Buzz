@@ -25,7 +25,13 @@ python main.py --status
 
 This status command does not require an OpenAI key. It should report the core local skills and show optional integrations as disabled until their credentials are configured.
 
-Then add `OPENAI_API_KEY` to the local `.env` and run:
+Then add `OPENAI_API_KEY` to the local `.env` and run the readiness check:
+
+```powershell
+python main.py --self-check
+```
+
+When `ready_for_core_test` is `true`, start Buzz:
 
 ```powershell
 python main.py
