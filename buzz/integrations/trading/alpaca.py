@@ -19,6 +19,10 @@ class AlpacaTradingProvider(TradingProvider):
         return {"symbol":symbol,"side":side,"quantity":quantity,"status":"preview","submitted":False}
     def place_order(self,symbol:str,side:str,quantity:float,idempotency_key:str)->dict[str,Any]:
         payload={"symbol":symbol,"side":side,"qty":str(quantity),"type":"market","time_in_force":"day","client_order_id":idempotency_key}
-        r=requests.post(self.base+"/v2/orders",headers=self.headers,json=payload,timeout=15); r.raise_for_status(); return r.json()
+        r=requests.post(self.base+"/v2/orders",headers=self.headers,json=payload,timeout=15); r.raise_for_status()
+        submitted=r.json()
+        broker_id=submitted.get("id")
+        verified=self._get(f"/v2/orders/{broker_id}") if broker_id else self._get(f"/v2/orders:by_client_order_id?client_order_id={idempotency_key}")
+        return {"submitted":submitted,"verified":verified,"idempotency_key":idempotency_key}
     def set_bot_enabled(self,bot:str,enabled:bool)->dict[str,Any]:
         raise NotImplementedError("Trading bot control requires a configured bot-control adapter.")
