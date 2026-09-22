@@ -17,7 +17,15 @@ pip install -r requirements-core.txt
 copy .env.example .env
 ```
 
-Add `OPENAI_API_KEY` to the local `.env`, then run:
+Before adding any cloud credentials, verify that Buzz boots and reports its local capability state:
+
+```powershell
+python main.py --status
+```
+
+This status command does not require an OpenAI key. It should report the core local skills and show optional integrations as disabled until their credentials are configured.
+
+Then add `OPENAI_API_KEY` to the local `.env` and run:
 
 ```powershell
 python main.py
