@@ -20,7 +20,7 @@ class VoiceAssistant:
                 if self.detector.detected():
                     self.detector.stop()
                     try:
-                        self.loop.listen_once()
+                        self.loop.conversation()
                     finally:
                         self.detector.start()
                 sleep(0.05)
