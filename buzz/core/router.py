@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any
-from uuid import uuid4
+from buzz.core.execution import ExecutionRecord
 
 from buzz.core.verification import verify_success
 from buzz.core.arguments import validate_arguments
@@ -21,7 +21,8 @@ class ToolRouter:
     audit_log: AuditLog | None = None
 
     def execute(self, skill_name: str, *, confirmed: bool = False, **kwargs: Any) -> SkillResult:
-        execution_id = uuid4().hex
+        record=ExecutionRecord(skill=skill_name,arguments=dict(kwargs))
+        execution_id=record.execution_id
         skill = self.registry.get(skill_name)
         validation_error = validate_arguments(skill.argument_schema, kwargs)
         if validation_error:
@@ -34,9 +35,13 @@ class ToolRouter:
             self._audit(skill_name, "blocked", execution_id, decision.reason)
             return result
         try:
+            record.attempted=True
             result = skill.execute(**kwargs)
         except Exception as exc:
             result = SkillResult(False, f"Execution failed: {exc}")
+        record.success=result.success
+        record.message=result.message
+        record.data=result.data
         verification = verify_success(result)
         outcome = "verified" if verification.verified else "failed"
         self._audit(skill_name, outcome, execution_id, result.message)
