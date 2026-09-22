@@ -32,6 +32,8 @@ class ProposalStore:
         return self._items.get(proposal_id)
     def pop(self,proposal_id:str)->ActionProposal|None:
         return self._items.pop(proposal_id,None)
+    def clear(self)->None:
+        self._items.clear()
 
 class PipelineFailureProposalHandler:
     """Suggest a rerun when GitHub supplies an exact workflow path/ref; never executes it."""
