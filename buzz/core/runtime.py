@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import json
+from uuid import uuid4
 
 from buzz.ai.provider import AIProvider
 from buzz.core.planner import parse_plan
@@ -40,12 +41,15 @@ class BuzzRuntime:
         plan = parse_plan(self.provider.respond(prompt).text)
         results, pending = [], []
         for action in plan.actions:
-            result = self.router.execute(action.skill, confirmed=confirmed, **action.arguments)
-            item = {"skill": action.skill, "arguments": action.arguments, "success": result.success, "message": result.message}
+            arguments = dict(action.arguments)
+            if action.skill == "trading.place_order" and not arguments.get("idempotency_key"):
+                arguments["idempotency_key"] = uuid4().hex
+            result = self.router.execute(action.skill, confirmed=confirmed, **arguments)
+            item = {"skill": action.skill, "arguments": arguments, "success": result.success, "message": result.message}
             results.append(item)
             if not result.success and "Confirmation required" in result.message:
-                approval = self.approvals.issue(action.skill, action.arguments)
-                pending.append({"skill": action.skill, "arguments": action.arguments, "reason": action.reason, "approval_token": approval.token})
+                approval = self.approvals.issue(action.skill, arguments)
+                pending.append({"skill": action.skill, "arguments": arguments, "reason": action.reason, "approval_token": approval.token})
         response = BuzzResponse(plan.reply, request.request_id, {"actions": results, "pending_confirmation": pending})
         if self.memory is not None:
             self.memory.put("conversation","last_exchange",{"user":request.text,"assistant":plan.reply})
