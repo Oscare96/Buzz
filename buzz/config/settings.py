@@ -10,6 +10,7 @@ class Settings:
     openai_api_key: str
     elevenlabs_api_key: str
     elevenlabs_voice_id: str
+    wake_model: str = ""
     home_assistant_url: str = ""
     home_assistant_token: str = ""
     github_token: str = ""
@@ -25,6 +26,7 @@ class Settings:
             openai_api_key=os.getenv("OPENAI_API_KEY","").strip(),
             elevenlabs_api_key=os.getenv("ELEVENLABS_API_KEY","").strip(),
             elevenlabs_voice_id=os.getenv("ELEVENLABS_VOICE_ID","").strip(),
+            wake_model=os.getenv("BUZZ_WAKE_MODEL","").strip(),
             home_assistant_url=os.getenv("HOME_ASSISTANT_URL","").strip(),
             home_assistant_token=os.getenv("HOME_ASSISTANT_TOKEN","").strip(),
             github_token=os.getenv("BUZZ_GITHUB_TOKEN","").strip(),
