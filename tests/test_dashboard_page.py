@@ -8,3 +8,5 @@ def test_dashboard_page_contains_buzz_control_center():
     assert 'fetch("/request"' in page
     assert 'fetch("/approve"' in page
     assert "Approval required:" in page
+    assert "localStorage" not in page
+    assert "sessionStorage" not in page
