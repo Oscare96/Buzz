@@ -14,5 +14,6 @@ def status_report(settings: Settings | None = None) -> dict:
         "home_assistant_configured": settings.home_assistant_enabled,
         "alpaca_configured": settings.alpaca_enabled,
         "alpaca_paper_execution": settings.alpaca_paper_enabled,
+        "api_control_configured": bool(settings.api_token),
         "skills": registry.names(),
     }
