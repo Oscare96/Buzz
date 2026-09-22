@@ -23,4 +23,5 @@ def self_check(settings: Settings | None = None) -> dict:
     capabilities=status_report(settings)
     checks.append({"name":"core_skills","ok":len(capabilities["skills"])>=4,"detail":", ".join(capabilities["skills"])})
     checks.append({"name":"openai_key","ok":bool(settings.openai_api_key),"detail":"configured" if settings.openai_api_key else "missing"})
+    checks.append({"name":"platform","ok":True,"detail":platform.platform()})
     return {"ready_for_core_test":all(c["ok"] for c in checks if c["name"]!="openai_key") and bool(settings.openai_api_key),"checks":checks,"capabilities":capabilities}
