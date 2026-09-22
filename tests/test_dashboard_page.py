@@ -6,3 +6,5 @@ def test_dashboard_page_contains_buzz_control_center():
     assert "Port 8787" in page
     assert "Talk to Buzz" in page
     assert 'fetch("/request"' in page
+    assert 'fetch("/approve"' in page
+    assert "Approval required:" in page
