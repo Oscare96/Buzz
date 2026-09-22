@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 from uuid import uuid4
+from datetime import datetime, timezone
 from buzz.events.models import BuzzEvent
 
 @dataclass(frozen=True)
@@ -13,6 +14,7 @@ class ActionProposal:
     reason: str
     source_event_id: str
     proposal_id: str = field(default_factory=lambda: uuid4().hex)
+    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 class ProposalStore:
     def __init__(self)->None:
@@ -21,6 +23,8 @@ class ProposalStore:
         self._items[proposal.proposal_id]=proposal
     def list(self)->tuple[ActionProposal,...]:
         return tuple(self._items.values())
+    def get(self,proposal_id:str)->ActionProposal|None:
+        return self._items.get(proposal_id)
     def pop(self,proposal_id:str)->ActionProposal|None:
         return self._items.pop(proposal_id,None)
 
