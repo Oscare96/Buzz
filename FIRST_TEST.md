@@ -11,16 +11,15 @@ git clone https://github.com/Oscare96/Buzz.git
 cd Buzz
 git checkout develop
 py -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-pip install -r requirements-core.txt
+.\.venv\Scripts\python.exe -m pip install --upgrade pip
+.\.venv\Scripts\python.exe -m pip install -r requirements-core.txt
 copy .env.example .env
 ```
 
 Before adding any cloud credentials, verify that Buzz boots and reports its local capability state:
 
 ```powershell
-python main.py --status
+.\.venv\Scripts\python.exe main.py --status
 ```
 
 This status command does not require an OpenAI key. It should report the core local skills and show optional integrations as disabled until their credentials are configured.
@@ -28,13 +27,13 @@ This status command does not require an OpenAI key. It should report the core lo
 Then add `OPENAI_API_KEY` to the local `.env` and run the readiness check:
 
 ```powershell
-python main.py --self-check
+.\.venv\Scripts\python.exe main.py --self-check
 ```
 
 When `ready_for_core_test` is `true`, start Buzz:
 
 ```powershell
-python main.py
+\.venv\Scripts\python.exe main.py
 ```
 
 ## First checks
