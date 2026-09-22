@@ -23,7 +23,12 @@ class ToolRouter:
     def execute(self, skill_name: str, *, confirmed: bool = False, **kwargs: Any) -> SkillResult:
         record=ExecutionRecord(skill=skill_name,arguments=dict(kwargs))
         execution_id=record.execution_id
-        skill = self.registry.get(skill_name)
+        try:
+            skill = self.registry.get(skill_name)
+        except KeyError:
+            message=f"Unknown skill: {skill_name}"
+            self._audit(skill_name,"blocked",execution_id,message)
+            return SkillResult(False,message,{"execution_id":execution_id})
         validation_error = validate_arguments(skill.argument_schema, kwargs)
         if validation_error:
             result = SkillResult(False, validation_error, {"execution_id": execution_id})
