@@ -46,3 +46,7 @@ class Settings:
     @property
     def alpaca_enabled(self) -> bool:
         return bool(self.alpaca_api_key and self.alpaca_secret_key)
+
+    @property
+    def alpaca_paper_enabled(self) -> bool:
+        return self.alpaca_enabled and self.alpaca_base_url.rstrip("/") == "https://paper-api.alpaca.markets"
