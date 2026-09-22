@@ -23,7 +23,9 @@ def build_default_registry(settings: Settings | None = None) -> SkillRegistry:
         trading = AlpacaTradingProvider(settings.alpaca_api_key, settings.alpaca_secret_key, settings.alpaca_base_url)
         registry.register(PortfolioSkill(trading))
         registry.register(PreviewOrderSkill(trading))
-        registry.register(PlaceOrderSkill(trading))
+        # Broker execution is intentionally limited to Alpaca paper trading until live mode is explicitly enabled.
+        if settings.alpaca_paper_enabled:
+            registry.register(PlaceOrderSkill(trading))
     if settings and settings.github_enabled:
         github = GitHubDevOpsProvider(settings.github_token)
         registry.register(PipelineStatusSkill(github))
