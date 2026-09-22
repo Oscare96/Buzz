@@ -9,6 +9,22 @@ from buzz.security.risk import RiskLevel
 from buzz.skills.base import Skill, SkillResult
 
 
+class RepositoryStatusSkill(Skill):
+    name = "devops.repository_status"
+    description = "Read repository metadata such as default branch, visibility, and archive state."
+    risk_level = RiskLevel.READ
+    argument_schema = {"type":"object","properties":{"repository":{"type":"string"}},"required":["repository"],"additionalProperties":False}
+
+    def __init__(self, provider: DevOpsProvider) -> None:
+        self.provider = provider
+
+    def execute(self, **kwargs: Any) -> SkillResult:
+        repository = str(kwargs.get("repository","")).strip()
+        if not repository:
+            return SkillResult(False,"Repository is required.")
+        return SkillResult(True,"Repository status retrieved.",self.provider.repository_status(repository))
+
+
 class PipelineStatusSkill(Skill):
     name = "devops.pipeline_status"
     description = "Read CI/CD pipeline status for a repository."
