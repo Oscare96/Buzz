@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from typing import Any
 from uuid import uuid4
 from datetime import datetime, timezone
+import json
 from buzz.events.models import BuzzEvent
 
 @dataclass(frozen=True)
@@ -20,9 +21,9 @@ class ProposalStore:
     def __init__(self)->None:
         self._items: dict[str,ActionProposal]={}
     def add(self,proposal:ActionProposal)->None:
-        fingerprint=(proposal.skill,repr(sorted(proposal.arguments.items())),proposal.source_event_id)
+        fingerprint=(proposal.skill,json.dumps(proposal.arguments,sort_keys=True,separators=(",",":"),default=str),proposal.source_event_id)
         for existing in self._items.values():
-            if (existing.skill,repr(sorted(existing.arguments.items())),existing.source_event_id)==fingerprint:
+            if (existing.skill,json.dumps(existing.arguments,sort_keys=True,separators=(",",":"),default=str),existing.source_event_id)==fingerprint:
                 return
         self._items[proposal.proposal_id]=proposal
     def list(self)->tuple[ActionProposal,...]:
