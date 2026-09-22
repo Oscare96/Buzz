@@ -17,7 +17,8 @@ class TTS(TextToSpeech):
     def stop(self): pass
 
 def test_repeated_silence_ends_conversation(monkeypatch):
-    monkeypatch.setattr("buzz.voice.voice_loop.record_wav",lambda path,seconds:path)
+    import buzz.voice.recorder as recorder
+    monkeypatch.setattr(recorder,"record_wav",lambda path,seconds:path)
     session=VoiceSession(timeout_seconds=60)
     loop=VoiceLoop(BuzzRuntime(Planner(),ToolRouter(SkillRegistry())),SilentSTT(),TTS(),session)
     loop.conversation(seconds=.01,max_turns=8,max_silence_turns=2)
