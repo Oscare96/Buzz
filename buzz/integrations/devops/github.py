@@ -24,7 +24,7 @@ class GitHubDevOpsProvider(DevOpsProvider):
     def pipeline_status(self,repository:str)->dict[str,Any]:
         repository=self._repository(repository); d=self._get(f"/repos/{repository}/actions/runs?per_page=1"); runs=d.get("workflow_runs",[])
         if not runs:return {"status":"none"}
-        r=runs[0]; return {"id":r.get("id"),"name":r.get("name"),"status":r.get("status"),"conclusion":r.get("conclusion"),"head_branch":r.get("head_branch")}
+        r=runs[0]; return {"id":r.get("id"),"name":r.get("name"),"status":r.get("status"),"conclusion":r.get("conclusion"),"head_branch":r.get("head_branch"),"path":r.get("path")}
     def pipeline_failure(self,repository:str)->dict[str,Any]:
         repository=self._repository(repository); d=self._get(f"/repos/{repository}/actions/runs?status=failure&per_page=1"); runs=d.get("workflow_runs",[])
         if not runs:return {"status":"none","message":"No failed workflow run found."}
